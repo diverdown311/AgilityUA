@@ -70,25 +70,46 @@ Click finished at the bottom of the GUI
 ## TASK 2 – Modify the SAML Identity Provider (IdP) Access Policy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Using the existing Access Policy (pre-built-idp.acme.com) and navigate to **Access ‑>
-   Profiles/Policies ‑> Access Profiles (Per-Session Policies)**, and click
-   the **Edit** link next to the previously created *pre-built-idp.acme.com*
+#. During this exercise we will make a copy of the idp.acme.com-policy and modify
+   it to demonstrate Kerberos to SAML functionality.  Navigate to Access, Profiles, Access Profiles
+   and click on the Copy link to the far right of the idp.acme.com-policy.   Name the policy Kerberos_SAML.
 
+#  From the Jump Host perform the following:
 
+#  Create a new user in Active Directory
+
+#  In this example the User Logon Name kerberos has been created
+
+#  From the WIndows command line, run the KTPASS command to generate a keytab file for the previously created user object
+
+ktpass /princ HTTP/kerberos.f5lab@ACME.COM /mapuser f5lab\kerberos /ptype KRB5_NT_PRINCIPAL /pass password /out c:\file.keytab
+
+Kerberos AAA Object
+
+# Create the AAA object by navigating to Access, Authentication, Kerberos
+
+# Specificy a Name (AD Domain)
+
+# Specify the Auth Realm (This should be HTTP for http/https services)
+
+# Browse to locate the Keytab file (The Keytab file should be located at c:\file.keytab)
+
+# Click Finished to complete the creation of the AAA object
+
+#  Review the AAA server configuration at Access, Authentication
+
+#  We will now modify the Kerberos_SAML Access Policy
+
+#  Navigate to Access, Profiles, Per-Session Profiles and Edit the Kerberos_SAML Access Profile
 
 #. Delete the **Logon Page** object by clicking on the **X** as shown
-
-
 
 #. In the resulting **Item Deletion Confirmation** dialog, ensure that the
    previous node is connect to the **fallback** branch, and click the
    **Delete** button
 
-
-
-#. In the **Visual Policy Editor** window for ``/Common/pre-built-idp.acme.com access policy``,
+#. In the **Visual Policy Editor** window for ``/Common/Kerberos_SAML access policy``,
    click the **Plus (+) Sign** between **Start** and **AD Auth**
-
 
 
 #. In the pop-up dialog box, select the **Logon** tab and then select the
@@ -107,8 +128,7 @@ Click finished at the bottom of the GUI
 #. Click the **Save** button at the bottom of the dialog box
 
 
-
-#. In the **Visual Policy Editor** window for ``/Common/pre-built-idp.acme.com policy``,
+#. In the **Visual Policy Editor** window for ``/Common/Kerberos_SAML policy``,
    click the **Plus (+) Sign** on the **Negotiate** branch between
    **HTTP 401 Response** and **Deny**
 
@@ -121,7 +141,7 @@ Click finished at the bottom of the GUI
 #. In the **Kerberos Auth** dialog box, enter the following information:
 
    +----------------------+-------------------------------------+
-   | AAA Server:          | ``/Common/apm-krb-aaa`` (drop down) |
+   | AAA Server:          | ``/Common/Kerberos_SSL`` (drop down) |
    +----------------------+-------------------------------------+
    | Request Based Auth:  | ``Disabled`` (drop down)            |
    +----------------------+-------------------------------------+
@@ -134,7 +154,7 @@ Click finished at the bottom of the GUI
       the Learn More section at the end of this guide.
 
 #. In the **Visual Policy Editor** window for
-   ``/Common/pre-built-idp.acme.com policy``, click the **Plus (+) Sign** on the
+   ``/Common/Kerberos_SSL policy``, click the **Plus (+) Sign** on the
    **Successful** branch between **Kerberos Auth** and **Deny**
 
 
@@ -145,11 +165,10 @@ Click finished at the bottom of the GUI
 
 
 #. In the resulting **AD Query(1)** pop-up window, select
-   ``/Commmon/prebuilt-ad-servers`` from the **Server** drop down menu
+   ``/Commmon/AD_Server`` from the **Server** drop down menu
 
 #. In the **SearchFilter** field, enter the following value:
    ``userPrincipalName=%{session.logon.last.username}``
-
 
 
 #. In the **AD Query(1)** window, click the **Branch Rules** tab
@@ -189,7 +208,7 @@ Click finished at the bottom of the GUI
 
 
 
-#. In the **Visual Policy Editor** window for ``/Common/pre-built-idp.acme.com policy``,
+#. In the **Visual Policy Editor** window for ``/Common/Kerberos_SAML policy``,
    click the **Plus (+) Sign** on the **Successful** branch between
    **AD Query(1)** and **Deny**
 
